@@ -11,14 +11,16 @@
 
 
 <?php  
-echo '<pre>';
-print_r($containers);die();
-foreach ($containers as $container) {
 
-$getid['id'] = $container -> getId();
-$runtimeInformations = $container -> getRuntimeInformations();
-$contents[] = array_merge($getid,$runtimeInformations);
-}?>
+	if(empty($containers))
+	$containers = json_decode($deployment->containers);	
+	foreach ($containers as $container) 
+	{
+		$getid['id'] = $container -> getId();
+		$runtimeInformations = $container -> getRuntimeInformations();
+		$contents[] = array_merge($getid,$runtimeInformations);
+	}
+?>
 
 
 
@@ -62,7 +64,8 @@ $('#accordion').on('shown.bs.collapse', toggleChevron);
             <button type="button" class="btn btn-danger btn-xs" disabled="disabled">{{ 'Stoped' }}</button>
             <a href="{{URL::to('deployment/startContainer').'?id='.$value['Id'].'&deploymentId=' .$deployment->id }}"><i class="fa fa-play"></i></a>
             @endif
-       <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i>
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ $key }}">
+       <i class="indicator glyphicon glyphicon-chevron-down  pull-right"></i></a>
       </h4>
     </div>
     <div id="collapse{{ $key }}" class="panel-collapse collapse">
@@ -115,7 +118,7 @@ $('#accordion').on('shown.bs.collapse', toggleChevron);
             <td> @if(is_array($value['HostConfig']['PortBindings'])) 
               <ul>
                     @foreach ($value['HostConfig']['PortBindings'] as $k5=>$v5)
-                      <li>{{ $k5.'='.json_encode($v5) }}</li>
+                      <li>{{ preg_replace('/[^A-Za-z0-9 \-,:]/', '', str_replace('/', '-', $k5).' : '.json_encode($v5)) }}</li>
                     @endforeach
               </ul>      
                  @endif  
@@ -147,7 +150,7 @@ $('#accordion').on('shown.bs.collapse', toggleChevron);
             <td> @if(is_array($value['NetworkSettings']['Ports'])) 
               <ul>
                     @foreach ($value['NetworkSettings']['Ports'] as $k6=>$v6)
-                      <li>{{ $k6.'='.json_encode($v6) }}</li>
+                      <li>{{ preg_replace('/[^A-Za-z0-9 \-,:]/', '', str_replace('/', '-', $k6).' : '.json_encode($v6)) }}</li>
                     @endforeach
               </ul>      
                  @endif  
